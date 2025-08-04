@@ -7,6 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
 import Tasks from "./pages/Tasks";
+import Sales from "./pages/Sales";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -34,6 +35,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Tasks />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/sales" 
+              element={
+                <ProtectedRoute>
+                  <Sales />
                 </ProtectedRoute>
               } 
             />

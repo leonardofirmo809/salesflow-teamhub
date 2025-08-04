@@ -46,9 +46,11 @@ const Index = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled>
-                Em breve
-              </Button>
+              <Link to="/sales">
+                <Button className="w-full">
+                  Acessar Vendas
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
