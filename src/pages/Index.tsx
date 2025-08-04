@@ -1,6 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -29,9 +30,11 @@ const Index = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled>
-                Em breve
-              </Button>
+              <Link to="/tasks">
+                <Button className="w-full">
+                  Acessar Tarefas
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
