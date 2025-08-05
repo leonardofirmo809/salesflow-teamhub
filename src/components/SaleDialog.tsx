@@ -29,12 +29,12 @@ export function SaleDialog({ open, onOpenChange, onSubmit, sale }: SaleDialogPro
   useEffect(() => {
     if (sale) {
       setFormData({
-        customer_name: sale.customer_name,
-        customer_email: sale.customer_email || '',
+        customer_name: sale.customerName,
+        customer_email: sale.customerEmail || '',
         product: sale.product,
         amount: sale.amount.toString(),
         status: sale.status,
-        sale_date: sale.sale_date.split('T')[0], // Format for date input
+        sale_date: sale.saleDate.split('T')[0], // Format for date input
       });
     } else {
       setFormData({

@@ -43,10 +43,10 @@ export function SaleCard({ sale, onEdit, onDelete }: SaleCardProps) {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-muted-foreground" />
-              <h3 className="font-semibold text-lg">{sale.customer_name}</h3>
+              <h3 className="font-semibold text-lg">{sale.customerName}</h3>
             </div>
-            {sale.customer_email && (
-              <p className="text-sm text-muted-foreground">{sale.customer_email}</p>
+            {sale.customerEmail && (
+              <p className="text-sm text-muted-foreground">{sale.customerEmail}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -95,15 +95,15 @@ export function SaleCard({ sale, onEdit, onDelete }: SaleCardProps) {
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <div>
               <p className="text-sm text-muted-foreground">Data da Venda</p>
-              <p className="font-medium">{formatDate(sale.sale_date)}</p>
+              <p className="font-medium">{formatDate(sale.saleDate)}</p>
             </div>
           </div>
         </div>
         
-        {sale.creator_profile && (
+        {sale.creator && (
           <div className="mt-4 pt-4 border-t">
             <p className="text-xs text-muted-foreground">
-              Criado por: {sale.creator_profile.full_name || 'Usuário'} em {formatDate(sale.created_at)}
+              Criado por: {sale.creator.fullName || 'Usuário'} em {formatDate(sale.createdAt)}
             </p>
           </div>
         )}

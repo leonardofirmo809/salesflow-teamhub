@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sales: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          customer_email: string | null
+          customer_name: string
+          id: string
+          product: string
+          sale_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by: string
+          customer_email?: string | null
+          customer_name: string
+          id?: string
+          product: string
+          sale_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          customer_email?: string | null
+          customer_name?: string
+          id?: string
+          product?: string
+          sale_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       task_comments: {
         Row: {
           comment: string
