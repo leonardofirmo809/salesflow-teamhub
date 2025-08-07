@@ -10,6 +10,7 @@ import Tasks from "./pages/Tasks";
 import Sales from "./pages/Sales";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import ExportCode from "./pages/ExportCode";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route path="/export" element={<ExportCode />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
