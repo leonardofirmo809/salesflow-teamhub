@@ -11,7 +11,7 @@ const Index = () => {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Sistema de Gestão</h1>
+            <h1 className="text-3xl font-bold">Sistema do Leozin</h1>
             <p className="text-muted-foreground">
               Bem-vindo, {user?.user_metadata?.full_name || user?.email}!
             </p>
