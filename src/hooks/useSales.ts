@@ -74,19 +74,19 @@ export const useSales = () => {
     }
   };
 
-  const createSale = async (saleData: Omit<Sale, 'id' | 'createdAt' | 'updatedAt' | 'creator'>) => {
+  const createSale = async (saleData: any) => {
     if (!user) return { error: 'Usuário não autenticado' };
 
     try {
       const { data, error } = await supabase
         .from('sales')
         .insert({
-          customer_name: saleData.customerName,
-          customer_email: saleData.customerEmail,
+          customer_name: saleData.customer_name || saleData.customerName,
+          customer_email: saleData.customer_email || saleData.customerEmail || null,
           product: saleData.product,
           amount: saleData.amount,
           status: saleData.status,
-          sale_date: saleData.saleDate,
+          sale_date: saleData.sale_date || saleData.saleDate || new Date().toISOString(),
           created_by: user.id
         })
         .select()
@@ -97,6 +97,7 @@ export const useSales = () => {
       await fetchSales();
       return { error: null };
     } catch (err) {
+      console.error('Erro ao criar venda:', err);
       return { error: err instanceof Error ? err.message : 'Erro ao criar venda' };
     }
   };

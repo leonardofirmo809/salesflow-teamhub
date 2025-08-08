@@ -63,9 +63,12 @@ export function SaleDialog({ open, onOpenChange, onSubmit, sale }: SaleDialogPro
     setLoading(true);
     
     const submitData = {
-      ...formData,
+      customer_name: formData.customer_name,
+      customer_email: formData.customer_email || null,
+      product: formData.product,
       amount: parseFloat(formData.amount),
-      customer_email: formData.customer_email || undefined,
+      status: formData.status,
+      sale_date: formData.sale_date || new Date().toISOString()
     };
 
     const { error } = await onSubmit(submitData);
