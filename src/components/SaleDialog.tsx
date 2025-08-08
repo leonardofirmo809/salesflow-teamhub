@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sale } from '@/hooks/useSales';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SaleDialogProps {
   open: boolean;
@@ -16,6 +17,7 @@ interface SaleDialogProps {
 
 export function SaleDialog({ open, onOpenChange, onSubmit, sale }: SaleDialogProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     customer_name: '',
     customer_email: '',
@@ -51,10 +53,32 @@ export function SaleDialog({ open, onOpenChange, onSubmit, sale }: SaleDialogPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form submitted with data:', formData);
+    console.log('User authenticated:', !!user);
+    
+    if (!user) {
+      toast({
+        title: "Erro de Autenticação",
+        description: "Você precisa estar logado para criar vendas",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (!formData.customer_name || !formData.product || !formData.amount) {
       toast({
         title: "Erro",
         description: "Preencha todos os campos obrigatórios",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const amountNumber = parseFloat(formData.amount);
+    if (isNaN(amountNumber) || amountNumber <= 0) {
+      toast({
+        title: "Erro",
+        description: "Digite um valor válido maior que zero",
         variant: "destructive",
       });
       return;
@@ -66,14 +90,17 @@ export function SaleDialog({ open, onOpenChange, onSubmit, sale }: SaleDialogPro
       customer_name: formData.customer_name,
       customer_email: formData.customer_email || null,
       product: formData.product,
-      amount: parseFloat(formData.amount),
+      amount: amountNumber,
       status: formData.status,
       sale_date: formData.sale_date || new Date().toISOString()
     };
 
+    console.log('Submitting sale data:', submitData);
+
     const { error } = await onSubmit(submitData);
     
     if (error) {
+      console.error('Submit error:', error);
       toast({
         title: "Erro",
         description: error,
@@ -84,6 +111,7 @@ export function SaleDialog({ open, onOpenChange, onSubmit, sale }: SaleDialogPro
         title: "Sucesso",
         description: sale ? "Venda atualizada com sucesso" : "Venda criada com sucesso",
       });
+      onOpenChange(false);
     }
     
     setLoading(false);

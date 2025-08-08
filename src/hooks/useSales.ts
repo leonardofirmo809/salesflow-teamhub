@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,16 +40,24 @@ export const useSales = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchSales = async () => {
-    if (!user) return;
+    console.log('fetchSales called, user:', user);
+    if (!user) {
+      console.log('No user, skipping fetch');
+      setLoading(false);
+      return;
+    }
     
     setLoading(true);
     setError(null);
     
     try {
+      console.log('Fetching sales from database...');
       const { data, error } = await supabase
         .from('sales')
         .select('*')
         .order('created_at', { ascending: false });
+
+      console.log('Sales fetch result:', { data, error });
 
       if (error) throw error;
 
@@ -66,8 +75,10 @@ export const useSales = () => {
         creator: undefined
       })) || [];
 
+      console.log('Processed sales:', salesWithCreator);
       setSales(salesWithCreator);
     } catch (err) {
+      console.error('Error fetching sales:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar vendas');
     } finally {
       setLoading(false);
@@ -75,22 +86,34 @@ export const useSales = () => {
   };
 
   const createSale = async (saleData: any) => {
-    if (!user) return { error: 'Usuário não autenticado' };
+    console.log('createSale called with:', saleData);
+    console.log('User authenticated:', !!user, user?.id);
+    
+    if (!user) {
+      console.error('User not authenticated');
+      return { error: 'Usuário não autenticado' };
+    }
 
     try {
+      const insertData = {
+        customer_name: saleData.customer_name || saleData.customerName,
+        customer_email: saleData.customer_email || saleData.customerEmail || null,
+        product: saleData.product,
+        amount: saleData.amount,
+        status: saleData.status,
+        sale_date: saleData.sale_date || saleData.saleDate || new Date().toISOString(),
+        created_by: user.id
+      };
+
+      console.log('Inserting sale with data:', insertData);
+
       const { data, error } = await supabase
         .from('sales')
-        .insert({
-          customer_name: saleData.customer_name || saleData.customerName,
-          customer_email: saleData.customer_email || saleData.customerEmail || null,
-          product: saleData.product,
-          amount: saleData.amount,
-          status: saleData.status,
-          sale_date: saleData.sale_date || saleData.saleDate || new Date().toISOString(),
-          created_by: user.id
-        })
+        .insert(insertData)
         .select()
         .single();
+
+      console.log('Insert result:', { data, error });
 
       if (error) throw error;
 
@@ -147,8 +170,12 @@ export const useSales = () => {
   };
 
   useEffect(() => {
+    console.log('useSales useEffect triggered, user:', user);
     if (user) {
       fetchSales();
+    } else {
+      setSales([]);
+      setLoading(false);
     }
   }, [user]);
 
