@@ -44,15 +44,23 @@ export const useTasks = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('tasks')
-        .select(`
-          *,
-          assigned_profile:profiles!tasks_assigned_to_fkey(id, user_id, full_name, role),
-          creator_profile:profiles!tasks_created_by_fkey(id, user_id, full_name, role)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setTasks(data as Task[] || []);
+      
+      // Fetch profiles separately and combine
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('*');
+      
+      const tasksWithProfiles = data?.map(task => ({
+        ...task,
+        assigned_profile: profilesData?.find(p => p.user_id === task.assigned_to),
+        creator_profile: profilesData?.find(p => p.user_id === task.created_by)
+      })) || [];
+      
+      setTasks(tasksWithProfiles as Task[]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar tarefas');
     } finally {
@@ -76,16 +84,24 @@ export const useTasks = () => {
             created_by: user?.id,
           },
         ])
-        .select(`
-          *,
-          assigned_profile:profiles!tasks_assigned_to_fkey(id, user_id, full_name, role),
-          creator_profile:profiles!tasks_created_by_fkey(id, user_id, full_name, role)
-        `)
+        .select('*')
         .single();
 
       if (error) throw error;
-      setTasks(prev => [data as Task, ...prev]);
-      return { data, error: null };
+      
+      // Fetch profiles to get profile data
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('*');
+      
+      const taskWithProfiles = {
+        ...data,
+        assigned_profile: profilesData?.find(p => p.user_id === data.assigned_to),
+        creator_profile: profilesData?.find(p => p.user_id === data.created_by)
+      };
+      
+      setTasks(prev => [taskWithProfiles as Task, ...prev]);
+      return { data: taskWithProfiles, error: null };
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Erro ao criar tarefa';
       setError(errorMsg);
@@ -99,16 +115,24 @@ export const useTasks = () => {
         .from('tasks')
         .update(updates)
         .eq('id', id)
-        .select(`
-          *,
-          assigned_profile:profiles!tasks_assigned_to_fkey(id, user_id, full_name, role),
-          creator_profile:profiles!tasks_created_by_fkey(id, user_id, full_name, role)
-        `)
+        .select('*')
         .single();
 
       if (error) throw error;
-      setTasks(prev => prev.map(task => task.id === id ? data as Task : task));
-      return { data, error: null };
+      
+      // Fetch profiles to get profile data
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('*');
+      
+      const taskWithProfiles = {
+        ...data,
+        assigned_profile: profilesData?.find(p => p.user_id === data.assigned_to),
+        creator_profile: profilesData?.find(p => p.user_id === data.created_by)
+      };
+      
+      setTasks(prev => prev.map(task => task.id === id ? taskWithProfiles as Task : task));
+      return { data: taskWithProfiles, error: null };
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Erro ao atualizar tarefa';
       setError(errorMsg);
