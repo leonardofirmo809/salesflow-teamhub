@@ -26,32 +26,37 @@ const Tasks = () => {
   });
 
   const handleCreateTask = async (taskData: any) => {
-    console.log('Tasks handleCreateTask - starting with data:', taskData);
     try {
       const result = await createTask(taskData);
-      console.log('Tasks handleCreateTask - result:', result);
       if (result.error) {
         console.error('Erro ao criar tarefa:', result.error);
       } else {
-        console.log('Tasks handleCreateTask - success, closing dialog');
         setIsDialogOpen(false);
       }
     } catch (error) {
-      console.error('Tasks handleCreateTask - unexpected error:', error);
+      console.error('Erro inesperado ao criar tarefa:', error);
     }
   };
 
   const handleUpdateTask = async (id: string, updates: any) => {
-    const result = await updateTask(id, updates);
-    if (result.error) {
-      console.error('Erro ao atualizar tarefa:', result.error);
+    try {
+      const result = await updateTask(id, updates);
+      if (result.error) {
+        console.error('Erro ao atualizar tarefa:', result.error);
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao atualizar tarefa:', error);
     }
   };
 
   const handleDeleteTask = async (id: string) => {
-    const result = await deleteTask(id);
-    if (result.error) {
-      console.error('Erro ao deletar tarefa:', result.error);
+    try {
+      const result = await deleteTask(id);
+      if (result.error) {
+        console.error('Erro ao deletar tarefa:', result.error);
+      }
+    } catch (error) {
+      console.error('Erro inesperado ao deletar tarefa:', error);
     }
   };
 

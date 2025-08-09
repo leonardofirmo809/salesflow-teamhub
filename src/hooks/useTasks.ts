@@ -39,23 +39,24 @@ export const useTasks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('useTasks - user:', user);
-  console.log('useTasks - loading:', loading);
-
   const fetchTasks = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      console.log('fetchTasks - starting fetch');
       setLoading(true);
+      setError(null);
+      
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .order('created_at', { ascending: false });
 
-      console.log('fetchTasks - response:', { data, error });
-
       if (error) throw error;
       
-      // Fetch profiles separately and combine
+      // Fetch profiles separately
       const { data: profilesData } = await supabase
         .from('profiles')
         .select('*');
@@ -66,10 +67,9 @@ export const useTasks = () => {
         creator_profile: profilesData?.find(p => p.user_id === task.created_by)
       })) || [];
       
-      console.log('fetchTasks - final tasks:', tasksWithProfiles);
       setTasks(tasksWithProfiles as Task[]);
     } catch (err) {
-      console.error('fetchTasks - error:', err);
+      console.error('Error fetching tasks:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar tarefas');
     } finally {
       setLoading(false);
@@ -83,13 +83,21 @@ export const useTasks = () => {
     due_date?: string;
     assigned_to?: string;
   }) => {
+    if (!user) {
+      return { data: null, error: 'Usuário não autenticado' };
+    }
+
     try {
       const { data, error } = await supabase
         .from('tasks')
         .insert([
           {
-            ...taskData,
-            created_by: user?.id,
+            title: taskData.title,
+            description: taskData.description || null,
+            priority: taskData.priority,
+            due_date: taskData.due_date || null,
+            assigned_to: taskData.assigned_to || null,
+            created_by: user.id,
           },
         ])
         .select('*')
@@ -112,7 +120,7 @@ export const useTasks = () => {
       return { data: taskWithProfiles, error: null };
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Erro ao criar tarefa';
-      setError(errorMsg);
+      console.error('Error creating task:', err);
       return { data: null, error: errorMsg };
     }
   };
@@ -143,7 +151,7 @@ export const useTasks = () => {
       return { data: taskWithProfiles, error: null };
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Erro ao atualizar tarefa';
-      setError(errorMsg);
+      console.error('Error updating task:', err);
       return { data: null, error: errorMsg };
     }
   };
@@ -160,21 +168,13 @@ export const useTasks = () => {
       return { error: null };
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Erro ao deletar tarefa';
-      setError(errorMsg);
+      console.error('Error deleting task:', err);
       return { error: errorMsg };
     }
   };
 
   useEffect(() => {
-    console.log('useTasks useEffect - user changed:', user);
-    if (user) {
-      console.log('useTasks useEffect - calling fetchTasks');
-      fetchTasks();
-    } else {
-      console.log('useTasks useEffect - no user, not fetching tasks');
-      setTasks([]);
-      setLoading(false);
-    }
+    fetchTasks();
   }, [user]);
 
   return {
@@ -203,7 +203,7 @@ export const useProfiles = () => {
         if (error) throw error;
         setProfiles(data || []);
       } catch (err) {
-        console.error('Erro ao carregar perfis:', err);
+        console.error('Error fetching profiles:', err);
       } finally {
         setLoading(false);
       }
