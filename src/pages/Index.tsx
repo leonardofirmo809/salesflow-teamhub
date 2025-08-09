@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 
 const Index = () => {
   const { user, signOut } = useAuth();
+  
+  console.log('Index - component loading, user:', user);
 
   return (
     <div className="min-h-screen bg-background p-6">

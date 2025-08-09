@@ -14,7 +14,10 @@ import ExportCode from "./pages/ExportCode";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  console.log('App - component loading');
+  
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -55,6 +58,7 @@ const App = () => (
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
