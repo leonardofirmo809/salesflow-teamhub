@@ -39,13 +39,19 @@ export const useTasks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  console.log('useTasks - user:', user);
+  console.log('useTasks - loading:', loading);
+
   const fetchTasks = async () => {
     try {
+      console.log('fetchTasks - starting fetch');
       setLoading(true);
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
         .order('created_at', { ascending: false });
+
+      console.log('fetchTasks - response:', { data, error });
 
       if (error) throw error;
       
@@ -60,8 +66,10 @@ export const useTasks = () => {
         creator_profile: profilesData?.find(p => p.user_id === task.created_by)
       })) || [];
       
+      console.log('fetchTasks - final tasks:', tasksWithProfiles);
       setTasks(tasksWithProfiles as Task[]);
     } catch (err) {
+      console.error('fetchTasks - error:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar tarefas');
     } finally {
       setLoading(false);
@@ -158,8 +166,14 @@ export const useTasks = () => {
   };
 
   useEffect(() => {
+    console.log('useTasks useEffect - user changed:', user);
     if (user) {
+      console.log('useTasks useEffect - calling fetchTasks');
       fetchTasks();
+    } else {
+      console.log('useTasks useEffect - no user, not fetching tasks');
+      setTasks([]);
+      setLoading(false);
     }
   }, [user]);
 
