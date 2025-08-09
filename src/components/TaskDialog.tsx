@@ -34,6 +34,8 @@ interface TaskDialogProps {
 }
 
 export const TaskDialog = ({ isOpen, onClose, onSubmit, editingTask, profiles }: TaskDialogProps) => {
+  console.log('TaskDialog render - props:', { isOpen, editingTask, profiles });
+  
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
@@ -61,6 +63,7 @@ export const TaskDialog = ({ isOpen, onClose, onSubmit, editingTask, profiles }:
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('TaskDialog handleSubmit - starting');
     
     const taskData = {
       title,
@@ -71,7 +74,13 @@ export const TaskDialog = ({ isOpen, onClose, onSubmit, editingTask, profiles }:
       ...(editingTask && { status }),
     };
 
-    onSubmit(taskData);
+    console.log('TaskDialog handleSubmit - taskData:', taskData);
+    
+    try {
+      onSubmit(taskData);
+    } catch (error) {
+      console.error('TaskDialog handleSubmit - error:', error);
+    }
   };
 
   const priorityLabels = {

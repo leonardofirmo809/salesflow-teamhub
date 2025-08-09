@@ -26,11 +26,18 @@ const Tasks = () => {
   });
 
   const handleCreateTask = async (taskData: any) => {
-    const result = await createTask(taskData);
-    if (result.error) {
-      console.error('Erro ao criar tarefa:', result.error);
-    } else {
-      setIsDialogOpen(false);
+    console.log('Tasks handleCreateTask - starting with data:', taskData);
+    try {
+      const result = await createTask(taskData);
+      console.log('Tasks handleCreateTask - result:', result);
+      if (result.error) {
+        console.error('Erro ao criar tarefa:', result.error);
+      } else {
+        console.log('Tasks handleCreateTask - success, closing dialog');
+        setIsDialogOpen(false);
+      }
+    } catch (error) {
+      console.error('Tasks handleCreateTask - unexpected error:', error);
     }
   };
 
